@@ -1,0 +1,11 @@
+[settings]
+os=baremetal
+arch=armv7hf
+compiler=gcc
+compiler.version=14
+compiler.libcxx=libstdc++11
+build_type=Debug
+
+[conf]
+tools.build:compiler_executables={'c': 'arm-none-eabi-gcc', 'cpp': 'arm-none-eabi-g++', 'asm': 'arm-none-eabi-gcc'}
+tools.cmake.cmaketoolchain:user_toolchain=["{{os.path.join(profile_dir, '../cmake/arm-none-eabi.cmake')}}"]

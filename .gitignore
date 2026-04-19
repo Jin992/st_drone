@@ -1,0 +1,8 @@
+build/
+CMakeUserPresets.json
+*.elf
+*.bin
+*.hex
+*.map
+.cache/
+.claude/

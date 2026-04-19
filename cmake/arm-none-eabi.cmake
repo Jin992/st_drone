@@ -1,0 +1,26 @@
+set(CMAKE_SYSTEM_NAME Generic)
+set(CMAKE_SYSTEM_PROCESSOR arm)
+
+set(CMAKE_TRY_COMPILE_TARGET_TYPE STATIC_LIBRARY)
+
+find_program(ARM_GCC arm-none-eabi-gcc REQUIRED)
+find_program(ARM_GXX arm-none-eabi-g++ REQUIRED)
+find_program(ARM_OBJCOPY arm-none-eabi-objcopy REQUIRED)
+find_program(ARM_SIZE arm-none-eabi-size REQUIRED)
+
+set(CMAKE_C_COMPILER   ${ARM_GCC})
+set(CMAKE_CXX_COMPILER ${ARM_GXX})
+set(CMAKE_ASM_COMPILER ${ARM_GCC})
+set(CMAKE_OBJCOPY      ${ARM_OBJCOPY})
+set(CMAKE_SIZE         ${ARM_SIZE})
+
+set(CPU_FLAGS "-mcpu=cortex-m4 -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb")
+
+set(CMAKE_C_FLAGS_INIT   "${CPU_FLAGS}")
+set(CMAKE_CXX_FLAGS_INIT "${CPU_FLAGS}")
+set(CMAKE_ASM_FLAGS_INIT "${CPU_FLAGS}")
+
+set(CMAKE_FIND_ROOT_PATH_MODE_PROGRAM NEVER)
+set(CMAKE_FIND_ROOT_PATH_MODE_LIBRARY ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_INCLUDE ONLY)
+set(CMAKE_FIND_ROOT_PATH_MODE_PACKAGE ONLY)
