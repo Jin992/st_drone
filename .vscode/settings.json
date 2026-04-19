@@ -1,0 +1,9 @@
+{
+  "clangd.arguments": [
+    "--query-driver=/opt/homebrew/bin/arm-none-eabi-*",
+    "--compile-commands-dir=${workspaceFolder}/build/Debug",
+    "--background-index",
+    "--clang-tidy"
+  ],
+  "C_Cpp.intelliSenseEngine": "disabled"
+}

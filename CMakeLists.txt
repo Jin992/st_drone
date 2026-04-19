@@ -17,9 +17,12 @@ include(stm32/utilities)
 
 project(drone C ASM)
 
-# Download STM32CubeF4 CMSIS and HAL sources via FetchContent
-stm32_fetch_cmsis(F4)
-stm32_fetch_hal(F4)
+# Download STM32CubeF4 CMSIS and HAL sources via FetchContent (modern API avoids
+# deprecated FetchContent_Populate calls inside stm32_fetch_cmsis/stm32_fetch_hal)
+FetchContent_MakeAvailable(STM32-CMSIS STM32-CMSIS-F4 STM32-HAL-F4)
+set(STM32_CMSIS_PATH    ${stm32-cmsis_SOURCE_DIR})
+set(STM32_CMSIS_F4_PATH ${stm32-cmsis-f4_SOURCE_DIR})
+set(STM32_HAL_F4_PATH   ${stm32-hal-f4_SOURCE_DIR})
 
 find_package(CMSIS COMPONENTS STM32F405RG REQUIRED)
 find_package(HAL  COMPONENTS STM32F4 RCC GPIO CORTEX REQUIRED)
