@@ -12,20 +12,33 @@
     },
     {
       "name": "debug",
-      "displayName": "Debug",
+      "displayName": "Debug (STM32)",
       "inherits": "base",
       "binaryDir": "${sourceDir}/build/debug",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug"
+        "CMAKE_BUILD_TYPE": "Debug",
+        "HAL_BACKEND": "stm32"
       }
     },
     {
       "name": "release",
-      "displayName": "Release",
+      "displayName": "Release (STM32)",
       "inherits": "base",
       "binaryDir": "${sourceDir}/build/release",
       "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Release"
+        "CMAKE_BUILD_TYPE": "Release",
+        "HAL_BACKEND": "stm32"
+      }
+    },
+    {
+      "name": "hitl-debug",
+      "displayName": "Debug (HITL — JSBSim via USB-CDC)",
+      "inherits": "base",
+      "binaryDir": "${sourceDir}/build/hitl-debug",
+      "toolchainFile": "${sourceDir}/build/Debug/generators/conan_toolchain.cmake",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "HAL_BACKEND": "hitl"
       }
     }
   ],
@@ -37,6 +50,10 @@
     {
       "name": "release",
       "configurePreset": "release"
+    },
+    {
+      "name": "hitl-debug",
+      "configurePreset": "hitl-debug"
     }
   ]
 }

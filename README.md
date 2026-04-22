@@ -66,6 +66,90 @@ cmake --build --preset debug --target flash
 
 This runs OpenOCD via ST-Link.
 
+### Unit Tests (host, no hardware)
+
+```bash
+cd tests
+cmake --preset host-debug
+cmake --build --preset host-debug
+ctest --preset host-debug
+```
+
+Tests compile and run natively on a Mac/Linux machine. No STM32 required.
+
+---
+
+## HITL Simulation (PyBullet)
+
+Hardware-In-The-Loop runs the real STM32 firmware with simulated sensor data from
+gym-pybullet-drones on the PC. The flight control code is unchanged — only the HAL backend differs.
+
+### How it works
+
+```
+gym-pybullet-drones (PC)
+    │  MAVLink HIL_SENSOR (#107)            ← synthetic IMU/baro from PyBullet
+    │  MAVLink HIL_ACTUATOR_CONTROLS (#93)  → motor RPMs back into simulation
+    │
+    │  USB-C cable  (USB-CDC virtual serial port)
+    ▼
+STM32F405  —  HITL firmware  (hal/hitl/ backend)
+    hal_imu_read()   ← parses HIL_SENSOR
+    hal_pwm_set()    → sends HIL_ACTUATOR_CONTROLS
+```
+
+### Build HITL firmware
+
+```bash
+conan install . --profile profiles/arm-none-eabi --build=missing
+cmake --preset hitl-debug
+cmake --build --preset hitl-debug
+```
+
+Flash via ST-Link:
+
+```bash
+cmake --build --preset hitl-debug --target flash
+```
+
+### Connect STM32 to PC
+
+Disconnect ST-Link. Connect the WeAct board's **USB-C port** to the PC.
+The HITL firmware enumerates as a virtual COM port:
+
+- **macOS**: `/dev/tty.usbmodem*`
+- **Linux**: `/dev/ttyACM0`
+
+### Run the bridge
+
+The bridge script steps the PyBullet physics engine, sends `HIL_SENSOR` to the STM32,
+and feeds `HIL_ACTUATOR_CONTROLS` back into the simulation. A 3D GUI window opens
+automatically showing the CF2X quadrotor in real time.
+
+```bash
+pip install git+https://github.com/utiasDSL/gym-pybullet-drones.git pymavlink
+
+python scripts/pybullet_hitl_bridge.py \
+    --port /dev/tty.usbmodem*
+```
+
+| Argument | Default | Description |
+|---|---|---|
+| `--port` | `/dev/tty.usbmodem*` | STM32 USB-CDC serial port |
+| `--baud` | `115200` | Serial baud rate |
+| `--no-gui` | off | Disable the PyBullet 3D window |
+| `--verbose` | off | Print every actuator packet |
+
+The script runs at ~240 Hz (the CF2X control timestep).
+It waits for a MAVLink `HEARTBEAT` from the FC before starting the loop.
+The drone starts with motors pre-set to hover throttle so it doesn't free-fall
+before the FC control loop takes over.
+
+### Prerequisites
+
+- `pip install git+https://github.com/utiasDSL/gym-pybullet-drones.git pymavlink`
+- STM32 flashed with the HITL firmware (`HAL_BACKEND=hitl`)
+
 ---
 
 ## ESP32-C3 Firmware
